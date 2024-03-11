@@ -3,19 +3,28 @@ use std::sync::mpsc;
 use std::thread::{self, sleep};
 use std::time::Duration;
 
+
+
+const TARGET_PROGRAM : &str = "flatpak";
+const TARGET_ARGS : [&str; 4] = ["run", "-p", "org.videolan.VLC" ,"/home/gonik/Music/jaar.mp3"];
+const LISTENER_PROGRAM : &str = "curl";
+const LISTENER_ARGS : [&str; 1] = ["http://localhost:3000"];
+
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum ConnectionStatus {
     Connected,
     Disconnected,
 }
 
+
 fn run_process() -> Child {
-    Command::new("flatpak")
-        .args(["run", "-p", "org.videolan.VLC" ,"/home/gonik/Music/jaar.mp3"])
+    Command::new(TARGET_PROGRAM)
+        .args(TARGET_ARGS)
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .spawn()
-        .expect("ACA CAGAMO")
+        .expect("Can't launch target process")
 }
 
 fn main() {
@@ -24,8 +33,8 @@ fn main() {
 
     let (tx, rx) = mpsc::channel();
     thread::spawn(move || loop {
-        let output = Command::new("curl")
-            .args(["http://localhost:3000"])
+        let output = Command::new(LISTENER_PROGRAM)
+            .args(LISTENER_ARGS)
             .stdout(Stdio::null())
             .stderr(Stdio::null())
             .status()
