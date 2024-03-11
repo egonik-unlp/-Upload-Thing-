@@ -5,6 +5,16 @@ use std::time::Duration;
 
 
 
+/*
+The const definitions should be modified to select what programs act as listener and target.
+TARGET_PROGRAM should not use a bwrap.
+LISTENER_PROGRAM should have a success and a fail case. A success or a success following a 
+failure will result in TARGET_PROGRAM being launched with TARGET_ARGS.
+When modifying TARGET_ARGS and LISTENER_ARGS bare in mind that if you change the length of 
+the array you should change the type annotation. 
+Remember that an array type annotation is [T;N] where T is the type of the elements and N is 
+the number of elements in the array.
+*/
 const TARGET_PROGRAM : &str = "flatpak";
 const TARGET_ARGS : [&str; 4] = ["run", "-p", "org.videolan.VLC" ,"/home/gonik/Music/jaar.mp3"];
 const LISTENER_PROGRAM : &str = "curl";
