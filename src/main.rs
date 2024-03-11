@@ -40,25 +40,20 @@ fn main() {
             sleep(Duration::from_secs(2));
         }
     });
-    let long_handle = thread::spawn(move || {
-        let mut estado_previo = EstadoConexion::Conectado;
-        loop {
-            let estado_actual = rx.recv().unwrap();
-            if let EstadoConexion::Desconectado = estado_actual {
-                println!("[ERROR]: no hay conexion");
-                println!("Process id {}", process_that_i_want.id());
-                process_that_i_want.kill().expect("No lo puedo cerrar");
-               
-            }
-            if estado_previo == EstadoConexion::Desconectado
-                && estado_actual == EstadoConexion::Conectado
-            {
-                process_that_i_want = run_process()
-            }
-            estado_previo = estado_actual;
+    let mut estado_previo = EstadoConexion::Conectado;
+    loop {
+        let estado_actual = rx.recv().unwrap();
+        if let EstadoConexion::Desconectado = estado_actual {
+            println!("[ERROR]: no hay conexion");
+            println!("Process id {}", process_that_i_want.id());
+            process_that_i_want.kill().expect("No lo puedo cerrar");
+           
         }
-    });
-    short_handle.join().unwrap();
-    long_handle.join().unwrap();
-    
+        if estado_previo == EstadoConexion::Desconectado
+            && estado_actual == EstadoConexion::Conectado
+        {
+            process_that_i_want = run_process()
+        }
+        estado_previo = estado_actual;
+    }    
 }
