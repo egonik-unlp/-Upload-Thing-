@@ -3,30 +3,31 @@ use std::sync::mpsc;
 use std::thread::{self, sleep};
 use std::time::Duration;
 
-
-
 /*
 The const definitions should be modified to select what programs act as listener and target.
 TARGET_PROGRAM should not use a bwrap.
-LISTENER_PROGRAM should have a success and a fail case. A success or a success following a 
+LISTENER_PROGRAM should have a success and a fail case. A success or a success following a
 failure will result in TARGET_PROGRAM being launched with TARGET_ARGS.
-When modifying TARGET_ARGS and LISTENER_ARGS bare in mind that if you change the length of 
-the array you should change the type annotation. 
-Remember that an array type annotation is [T;N] where T is the type of the elements and N is 
+When modifying TARGET_ARGS and LISTENER_ARGS bare in mind that if you change the length of
+the array you should change the type annotation.
+Remember that an array type annotation is [T;N] where T is the type of the elements and N is
 the number of elements in the array.
 */
-const TARGET_PROGRAM : &str = "flatpak";
-const TARGET_ARGS : [&str; 4] = ["run", "-p", "org.videolan.VLC" ,"/home/gonik/Music/jaar.mp3"];
-const LISTENER_PROGRAM : &str = "curl";
-const LISTENER_ARGS : [&str; 1] = ["http://localhost:3000"];
-
+const TARGET_PROGRAM: &str = "flatpak";
+const TARGET_ARGS: [&str; 4] = [
+    "run",
+    "-p",
+    "org.videolan.VLC",
+    "/home/gonik/Music/jaar.mp3",
+];
+const LISTENER_PROGRAM: &str = "curl";
+const LISTENER_ARGS: [&str; 1] = ["http://localhost:3000"];
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum ConnectionStatus {
     Connected,
     Disconnected,
 }
-
 
 fn run_process() -> Child {
     Command::new(TARGET_PROGRAM)
@@ -64,8 +65,9 @@ fn main() {
             if previous_state == ConnectionStatus::Connected {
                 println!("[DISCONNECTED]: Listener ping received no response from remote url");
             }
-            process_that_i_want.kill().expect("Process cannot be killed");
-           
+            process_that_i_want
+                .kill()
+                .expect("Process cannot be killed");
         }
         if previous_state == ConnectionStatus::Disconnected
             && current_state == ConnectionStatus::Connected
@@ -75,5 +77,5 @@ fn main() {
             process_that_i_want = run_process();
         }
         previous_state = current_state;
-    }    
+    }
 }
